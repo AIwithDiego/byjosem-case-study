@@ -1,109 +1,218 @@
-# ByJoseM: a custom operations platform for a premium bartending business
+# ByJoseM case study
 
-**Case study by Diego Bauer.** Design, build and delivery, solo, from 2025 to 2026.
-This repository holds the write-up only. The ByJoseM software is private and no source code is published here.
+**One platform for a bartending business, from enquiry to paid invoice.**
 
-![The Events hub in the admin, with year filter, status cards and the event list. Demo data.](docs/screenshots/admin-events.png)
+[![Case study](https://img.shields.io/badge/case_study-client_work-0c1a1c?style=for-the-badge&labelColor=0c1a1c&color=e3cd9c)](#the-problem)
+[![Screens](https://img.shields.io/badge/screens-demo_data-0c1a1c?style=for-the-badge&labelColor=0c1a1c&color=7fe6da)](#what-it-does)
+[![checks](https://img.shields.io/github/actions/workflow/status/AIwithDiego/byjosem-case-study/ci.yml?branch=main&style=for-the-badge&label=checks&labelColor=0c1a1c)](https://github.com/AIwithDiego/byjosem-case-study/actions/workflows/ci.yml)
+![React](https://img.shields.io/badge/React-0c1a1c?style=for-the-badge&logo=react&logoColor=7fe6da)
+![Supabase](https://img.shields.io/badge/Supabase-0c1a1c?style=for-the-badge&logo=supabase&logoColor=7fe6da)
+[![Text](https://img.shields.io/badge/text-all_rights_reserved-0c1a1c?style=for-the-badge&labelColor=0c1a1c)](LICENSE)
 
-*The Events hub in the admin. All screenshots in this repo use demo data from a local QA stack.*
+[![134 pull requests merged between April and November 2026, 638 unit tests on money, pricing and stock, and a 50 MB menu sent over WhatsApp turned into a 390 KB page.](docs/assets/cover.png)](#what-it-does)
 
----
+A case study of client work. Built by Diego Bauer for ByJoseM, a premium mobile bartending service in Ireland, from October 2025 to November 2026, with Claude Code. The platform is live and in daily use; the software is private, so this repo holds the story, the decisions and screenshots made with demo data.
 
-## The client
+**[See the screens](#what-it-does)** (demo data, nothing real) · **[Read the decisions](docs/decisions.md)** · [Architecture](docs/architecture.md) · [Security](docs/security.md) · [byjosem.com](https://www.byjosem.com)
 
-ByJoseM is a premium mobile bartending service in Ireland: weddings, corporate events, private parties and cocktail masterclasses. The business grew faster than its tools.
+**Contents:** [The problem](#the-problem) · [Research](#research) · [What it does](#what-it-does) · [Results](#results) · [The build](#the-build) · [What went wrong](#what-went-wrong) · [What I learned](#what-i-learned) · [Read more](#read-more)
 
-Public site: [byjosem.com](https://www.byjosem.com)
+## The problem
 
-## What the business needed
+ByJoseM does weddings, corporate events, private parties and cocktail masterclasses. The business grew faster than its tools. When we started:
 
-When we started, enquiries arrived through WhatsApp, phone, email and a basic website. Leads lived in a spreadsheet with no status and no follow-up dates. Quotes were typed by hand. Stock was counted from memory. When the owner was not at an event, there was no reliable way to hand a bartender the menu, the kit list and the standards for the night.
+- **Enquiries came in everywhere:** WhatsApp, phone, email and a basic website form.
+- **Leads lived in a spreadsheet** with no status and no follow-up dates.
+- **Quotes were typed by hand,** and so were invoices.
+- **Stock was counted from memory.**
+- **The drinks menu went to customers as a file of about 50 MB** over WhatsApp.
+- **When the owner wasn't at an event,** there was no reliable way to hand a bartender the menu, the kit list and the standards for the night.
 
-It needed one place that covered the whole job:
+One booking is one thread: enquiry, lead, quote, event, stock, staff, invoice, payment, receipt. The owner runs all of it from a phone, between events.
 
-> enquiry, lead, quote, event, stock, staff, invoice, payment, receipt
+> Small businesses glue five apps together and copy the customer into each one. We built one thread the owner can run from a phone.
 
-and it had to be usable by one person on a phone, between events.
+## Research
 
-## Why off-the-shelf tools did not fit
+**What already exists.** The obvious stack: a website builder, a CRM, an invoicing app, an inventory app, a staff scheduling app. Each is good at its own slice. Together they meant five copies of the customer and no link between the quote, the event and the stock it used. Generic inventory apps count products for sale; a mobile bar needs a weekly count, par levels, a reorder list, and stock that leaves for an event and partly comes back. And a stack of per-seat subscriptions costs more each year than a small business wants to pay, with none of it belonging to the business.
 
-I looked at the obvious stack: a website builder, a CRM, an invoicing app, an inventory app, a staff scheduling app. Each one is good at its own slice. Together they did not fit this business:
+**Who it's for.** One owner, an ex-bartender, working from a phone. Then casual staff who need their event, their checklist and the menu, and nothing else. Every screen is judged on a phone first, and the help centre is written around the flow of a job, not the list of screens.
 
-- **The job is one thread.** A booking starts as an enquiry and ends as a paid invoice, with a menu, a team and a van load of stock in between. Five tools meant five copies of the customer and no link between the quote, the event and the stock it consumed.
-- **Bar inventory is its own discipline.** Generic inventory apps count products for sale. The business needs a weekly physical count, par levels, a reorder list, and stock that leaves for an event and partly comes back.
-- **Staff are casual and phone-first.** Workers needed a login-free-feeling portal with their event, their checklist and the menu, and nothing else.
-- **Cost and ownership.** A stack of per-seat subscriptions costs more each year than a small business wants to pay, and none of it would belong to the business.
-- **The owner runs the business from a phone.** That shaped everything from number entry to how the manual is written.
+**The limits we chose.**
 
-So I built one platform, in the open-ended way small businesses actually grow: one real problem at a time, each shipped and then tested by the owner on real bookings.
+1. **The database is the boundary.** No custom server. Row level security decides who sees what, and money and stock change only through database functions that recompute totals themselves.
+2. **One catalogue, one price, one pricing rule** feed the website, the enquiry form, the CRM and the quote builder.
+3. **Documents freeze what they were.** A quote or invoice keeps its lines, prices and business details as written; changing settings never rewrites a document a customer already has.
+4. **Workers never see prices,** and only see the events they're assigned to.
+5. **Built one real problem at a time,** each shipped and then tested by the owner on real bookings, not from a spec written once.
 
-## What I built
+**What I didn't build.**
 
-Three surfaces over one database.
+| Choice | Why | Trade-off |
+|---|---|---|
+| A weekly count and par levels, not stock worked out from recipes | Recipe-based usage only pays off when compared against till data, and there is no till | No automatic usage estimate; numbers drift until the next count ([decision 1](docs/decisions.md#1-kill-the-recipe-driven-inventory-engine-count-bottles-instead)) |
+| One invoice per job with payments against it, not deposit and balance invoices | The owner needs to know who still owes money, not a filing structure | Receipts became their own numbered documents ([decision 6](docs/decisions.md#6-one-invoice-per-job-reversing-our-own-earlier-call)) |
+| A custom platform, not five subscriptions | One thread from enquiry to receipt, owned by the business | Someone has to maintain it |
+| No automation tool in the middle | The first version sent notifications through one; the enquiry function now sends them itself, one less service to pay for and watch | Changes need a developer, not a drag-and-drop editor |
 
-**Public website.** Packages, services, experience cards, reviews, FAQs and an enquiry form, all edited by the owner from the admin. Enquiries become CRM leads automatically and trigger a customer confirmation email plus an internal notification. A public cocktail menu lets customers shortlist their three drinks and send the choice by WhatsApp without creating an account. It reads the same recipe records the staff use, so there is nothing to re-export when a drink changes.
+## What it does
 
-**Admin CMS and CRM.** The owner's cockpit, about thirty pages.
-- **Content management** for every section of the public site, with drag-and-drop ordering, a curated colour palette and icon set for package cards, and an image pipeline that resizes uploads in the browser.
-- **CRM with a lead pipeline**: statuses, three follow-up dates, notes, event details, and an agreed price. A dashboard with a year filter, a follow-ups list for the next 48 hours, upcoming events, a confirmed-pipeline chart and a won/lost view of where enquiries went.
-- **Quote generator**: packages priced flat, per guest, per hour or per cocktail, a free-form line editor for extras (two bartenders for four hours plus a waiter for five is six taps), travel fee helper, VAT inclusive or exclusive, and a branded PDF. Quotes can be saved as drafts, edited after sending with a revision number and a change history, duplicated, and converted into an invoice.
-- **Invoices** with a legal numbering sequence assigned only at issue, drafts that never consume a number, issued invoices that cannot be deleted (void instead), payments recorded against one invoice per job, receipts with their own numbers, and derived Overdue and Part-paid states. A fix for sole traders: the registration number and VAT number are separate fields, and the VAT line only prints when the business is actually VAT-registered.
-- **Stock management**: a mobile-first weekly stocktake in the order the owner walks the storeroom, par levels edited inline, a reorder list the owner can copy into WhatsApp or print, and a read-only count history.
-- **Events hub**: assign staff with roles, attach checklists, choose the cocktail menu, and plan the event's stock. Adding items is a plan; one Confirm step is the only thing that moves warehouse stock, and later changes move only the difference. Returns are recorded per item or in one tap. Pre-event briefs and post-event reports print as PDFs, with prices off by default because staff read them.
-- **Staff directory** with roles, availability and driving status, and one-click staff logins by email link.
-- **A help centre**: fourteen articles written around the flow of a job, one tap from the admin header, rendered from markdown as part of the build so it cannot drift from its source.
+Three surfaces over one database, plus a ChatGPT connector added in October 2026.
 
-**Worker portal.** Mobile-first. A worker sees only the events they are assigned to, with the menu (including measures and method), the checklists for their role, the event kit, and a start and complete clock. It also holds the training hub: videos, guides and checklists organised by category, with progress Jose can review.
+| Surface | Who | What it does |
+|---|---|---|
+| **Public website** | Customers | Packages, services, reviews, FAQs and an enquiry form, all edited by the owner. Enquiries become CRM leads automatically. A cocktail menu lets customers shortlist three drinks and send the choice by WhatsApp, no account needed. |
+| **Admin** | The owner | 32 pages: content, CRM and pipeline, quote builder with branded PDFs and revisions, invoices, payments and receipts, weekly stocktake and reorder list, events hub, staff directory, training, and a help centre of 14 articles. |
+| **Worker portal** | Staff | Their assigned events only: the menu, the checklists for their role, the event kit, a start and complete clock, and a training hub. |
+| **ChatGPT connector** | The owner | The owner asks about events, leads, quotes, stock and who owes money in his own ChatGPT, and can add leads, plan an event and save draft quotes in plain words. |
 
-## Outcomes the repo evidences
+<table>
+<tr>
+<td width="50%"><img src="docs/assets/event-stock-plan-not-confirmed.png" alt="An event's stock list with five items, each marked Not confirmed, and a Confirm inventory for the event button. Demo data."></td>
+<td width="50%"><img src="docs/assets/event-stock-confirm-dialog.png" alt="The confirm dialog listing exactly what will be taken from the warehouse, with Not yet and Confirm buttons. Demo data."></td>
+</tr>
+<tr>
+<td>Event stock is a plan. Nothing leaves the warehouse until it's confirmed.</td>
+<td>The confirm step shows exactly what will move before anything moves.</td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/assets/public-cocktail-menu.png" alt="The public cocktail menu with search, category pills and a seasonal section at the top. Demo data."></td>
+<td width="50%"><img src="docs/assets/admin-events-hub.png" alt="The admin Events hub with a year filter, status cards and the event list. Demo data."></td>
+</tr>
+<tr>
+<td>The public cocktail menu replaced a 50 MB file. A seasonal section leads only while seasonal drinks are on.</td>
+<td>The Events hub: assign staff, attach checklists, choose the menu, plan the stock.</td>
+</tr>
+</table>
 
-I am only listing what the project history can prove. No revenue claims.
+![How the platform works: one booking runs from enquiry to lead, quote, event, confirmed stock, invoice and payment. The public site, the admin, the ChatGPT connector and the worker portal each work on part of it, over one Postgres database with row level security.](docs/how-it-works.svg)
 
-- **Shipped continuously for a year.** 173 commits and over eighty merged pull requests across three versions, 80 database migrations, each one replayable from scratch on a local stack.
-- **Built from the owner's feedback, not a spec written once.** Several live review sessions with the owner, each producing a numbered list; in the larger rounds every point was shipped or deliberately parked, usually within the same session or the next day.
-- **One source of truth for prices.** The website, enquiry form, CRM, pipeline chart and quote builder were reading three different catalogues. A customer booking a masterclass could end up with the wrong package. After the rebuild, one catalogue and one pricing rule feed every surface.
-- **The cocktail menu stopped being a 50 MB file sent over WhatsApp.** It became a page of about 390 KB, because photos are served as resized WebP instead of the original PNGs.
-- **Homepage image weight dropped from 3.1 MB to 0.7 MB** after resizing uploads in the browser and serving every thumbnail through a resize transform.
-- **Accessibility measured, not assumed.** A contrast script over the design tokens went from 9 failing pairs to 0. 66 icon-only buttons got a tooltip and an accessible name (33 had none). The event page went from 7 axe violations to 0.
-- **Money handled in integer cents with server-side totals**, and a locale-safe number parser covered by unit tests. The project now has over 180 unit tests across the money, pricing and stock logic, plus written QA matrices and verification notes for each major change.
+1. **Enquiry to lead** ([architecture](docs/architecture.md#surfaces)): the form goes through a server-side function that stores it, emails the customer and notifies the owner; a database trigger turns it into a lead.
+2. **Quote** ([decisions 2, 3, 5](docs/decisions.md)): one catalogue with five pricing modes, a line editor for extras (two bartenders for four hours plus a waiter for five is six taps), a branded PDF, revisions with a change history, and one tap to turn it into an invoice.
+3. **Event** ([decision 7](docs/decisions.md#7-event-stock-is-a-plan-you-confirm-not-instant-movements)): staff with roles, checklists, the cocktail menu, and stock as a plan. Each cocktail adds its own ingredients; removing it takes exactly those off. Briefs and reports print as PDFs, with prices off by default.
+4. **Invoice and payments** ([decisions 2 and 6](docs/decisions.md#6-one-invoice-per-job-reversing-our-own-earlier-call)): a legal number assigned only at issue, issued invoices that can be voided but never deleted, payments against one invoice per job, a numbered receipt for each.
+5. **Stock** ([decision 1](docs/decisions.md#1-kill-the-recipe-driven-inventory-engine-count-bottles-instead)): a weekly count in the order the owner walks the storeroom, par levels edited inline, a reorder list to copy into WhatsApp.
+6. **Access** ([security](docs/security.md)): two roles, checked in the database and again in the interface. Workers read an event only while assigned to it.
 
-## Stack
+**The ChatGPT connector.** The owner already used ChatGPT, so the platform went there instead of the other way round. It connects through his own account but only reaches a narrow set of its own functions, never the admin's. Saving or changing a quote asks first. Stock leaving or coming back for an event needs a tap on a Confirm card. It never sends anything to a customer, deletes anything or touches payments, treats text typed by customers as untrusted, and can undo its own changes for seven days.
+
+## Results
+
+Measured in the private repo; the pull request numbers are there for anyone reviewing it with the client's permission.
+
+| What | Before | After | Where |
+|---|---|---|---|
+| Cocktail menu sent to customers | a file of about 50 MB over WhatsApp | a page of about 390 KB (13 KB per drink card instead of a 669 KB image) | PR #39, Aug 2026 |
+| Images on the homepage | 3,061 KB | 701 KB, after resizing uploads in the browser | PR #104, Sep 2026 |
+| Design-token colour pairs failing contrast | 9 | 0, checked by a script | PRs #56, #57, Aug 2026 |
+| Icon-only buttons with no accessible name | 33 of 66 | 0 of 66 | PR #87, Sep 2026 |
+| Accessibility violations (axe) on the event page | 7 | 0 | PR #101, Sep 2026 |
+| Unit tests on money, pricing, number parsing and stock | 0 | 638 | first suite Aug 2026; count at PR #165, Nov 2026 |
+
+<!-- TODO(Diego): the owner's time-saved figure, once Jose sends it. Leave it out until then. -->
+
+No revenue claims. What the history does show: 223 commits from October 2025 to November 2026, 134 merged pull requests since CI arrived in April 2026, and 102 database migrations, each replayable from scratch on a local stack.
+
+## The build
+
+Built by Diego Bauer. The first site was generated with Lovable in October 2025; by late November it had been taken over by hand and Lovable removed. From then on the platform was grown with Claude Code, credited as co-author across the history. I set the order of work with the owner, made the product and data calls, and tested every change before it reached him.
+
+From April 2026 the process was fixed after a production crash: one ticket, one branch, one pull request, CI with a real type check, unit tests and a production build, and nothing merged to main without a green run. Anything touching money, stock, auth or the schema got a design note first, written by four AI reviewers (architecture, UI and accessibility, QA, security and EU law) before any code. Each feature then got a written test matrix, and the owner tested it on real bookings.
+
+| When | What landed |
+|---|---|
+| Oct 2025 | First public site, generated with Lovable |
+| Nov 2025 | Full admin interface; Lovable removed |
+| Jan to Mar 2026 | CRM with lead pipeline; worker portal, events hub, roles and training; installable app (PWA) |
+| Apr 2026 | A security and data audit, then CI and error monitoring (#1, #2). From here, every change is a pull request |
+| Jun 2026 | Quote generator (#13), stock ledger and weekly stocktake (#16, #18), invoices (#21, #24, #25) |
+| Aug 2026 | Public cocktail menu (#39), locale-safe money parsing (#47), contrast sweep (#56, #57), one invoice per job (#73), help centre (#76, #77) |
+| Sep 2026 | One catalogue for every price (#91), event stock you confirm (#99), image weight cut (#104) |
+| Oct 2026 | ChatGPT connector built piece by piece (#118 to #151), live in the owner's ChatGPT on 18 Oct |
+| Nov 2026 | Security and privacy batch: secret scan, key rotation, cookie consent, data retention (#160 to #169) |
+
+Pull request numbers refer to the private repo.
+
+## Design and accessibility
+
+The brand was the owner's: dark surfaces and a gold accent. The work was making it usable on a phone and measurable.
+
+- **Contrast is measured.** A script computes the contrast of every design-token pair. It found 9 failing pairs, including a price at 1.05:1 and a chip at 1.00:1, and now runs whenever colours change.
+- **Hover and selected look different.** The hover colour had been set to the brand gold, which meant "selected" too. Fixing it at the token layer corrected every date picker, menu and input at once.
+- **Every icon button has a name.** One wrapper gives a tooltip and an accessible name from one label, applied across the admin.
+- **Phone first.** Number fields take whatever the keypad offers, the stocktake follows the storeroom, and the worker portal fits one hand.
+
+## What went wrong
+
+| | |
+|---|---|
+| **The brand colour was also the highlight colour.** Gold sat on gold: one price at 1.05:1, and "today" and "selected" looked the same in date pickers. An earlier claim of AAA contrast had never been true. | [Decision 4](docs/decisions.md#4-an-accessibility-pass-that-gave-66-icon-buttons-a-name) |
+| **The CI type check checked zero files.** It was green on every pull request for months; switching it on surfaced 14 hidden errors. | [Lessons](docs/lessons.md#a-check-with-no-failing-case-is-not-a-check) |
+| **A comma could make a quote 100 times too high.** On a phone keypad, `1,50` was read as 150. It hadn't reached a real document yet, which is when to fix it. | [Decision 3](docs/decisions.md#3-locale-safe-money-parsing-for-number-entry-on-a-phone-keypad) |
+| **Three catalogues disagreed on prices.** A customer who booked a masterclass on the website was recorded against a different package. | [Decision 5](docs/decisions.md#5-one-catalogue-and-one-pricing-rule) |
+| **We answered a question the owner didn't have.** Two invoices per job was sound accounting and meant twice the paperwork. After three weeks of real use we reversed it. | [Decision 6](docs/decisions.md#6-one-invoice-per-job-reversing-our-own-earlier-call) |
+| **A stock design followed the database, not the job.** It passed three careful reviews and the owner found it confusing within a day. The fix: a cocktail is the unit of work, and stock is a plan you confirm. | [Decision 7](docs/decisions.md#7-event-stock-is-a-plan-you-confirm-not-instant-movements) |
+| **We started building stock from recipes.** It needed till data the business will never have. We killed it and built the weekly count bars actually use. | [Decision 1](docs/decisions.md#1-kill-the-recipe-driven-inventory-engine-count-bottles-instead) |
+| **Three releases looked like they hadn't happened.** The installed app's service worker kept serving the old version, and since PDFs are made in the browser, a stale app could make a stale document. | [Lessons](docs/lessons.md#what-i-would-do-differently) |
+
+## What I learned
+
+- **Usage data is the cheapest user research.** Before one feedback meeting I checked what was actually used: the CRM daily, almost everything after it abandoned. The meeting became "why did you stop", and the answer was friction, not rejection.
+- **Write down the unit of work in the owner's words before any design review.** The one design rejected within a day was modelled on a table.
+- **Keep business rules you're unsure of out of the schema.** Reversing the invoice model was cheap only because that choice lived in the interface.
+- **A check you've never seen fail isn't a check.** Every new guard now fails once on purpose before it's trusted.
+- **Verify with the real system and real tokens.** Reading code says what should be true; calling the API as each role says what is.
+- **The manual is part of the product.** The help centre is rebuilt from markdown on every deploy, so it can't drift from the app.
+
+More in [docs/lessons.md](docs/lessons.md).
+
+**What's next:** invoices and document links through the ChatGPT connector, a full history per client, and five more demo-data screenshots for this repo (dashboard, quote builder, invoice PDF, stocktake and worker portal on a phone).
+
+## Ground rules
+
+- **No code.** The ByJoseM software is private and stays private. Nothing here runs.
+- **Demo data only.** Every screenshot comes from a local test stack with made-up records. No real customers, staff, prices or recipes.
+- **The client read it first.** ByJoseM gave permission for this case study and read the full text before it went live.
+- **Don't probe the live system.** It belongs to the client and is out of scope for testing. See [SECURITY.md](SECURITY.md).
+
+## Read more
+
+There's nothing to install: the software is private. To go deeper:
+
+1. [Architecture](docs/architecture.md): the surfaces, the data model and the roles, with diagrams.
+2. [Security](docs/security.md): how access is enforced and verified.
+3. [Decisions](docs/decisions.md): seven decisions and their trade-offs, several reversing something already built.
+4. [Lessons](docs/lessons.md): what I learned and what I'd do differently.
 
 | Layer | Choice |
 |---|---|
 | Frontend | React 18, TypeScript, Vite, installed as a PWA |
 | UI | shadcn/ui on Radix primitives, Tailwind CSS |
-| Data fetching | TanStack Query |
-| Forms | React Hook Form with Zod |
-| Backend | Supabase: Postgres, Auth, Storage, Row Level Security, edge functions |
-| Documents | react-pdf for quotes, invoices, receipts and event briefs, loaded only in the admin |
-| Charts | Recharts |
-| Drag and drop | dnd-kit |
-| Calendar | react-big-calendar |
-| Email | Transactional email provider on the business's own domain |
+| Data | Supabase: Postgres, Auth, Storage, row level security, edge functions |
+| Documents | react-pdf, loaded only in the admin |
 | Testing | Vitest for logic, Playwright and axe for flows and accessibility |
-| Delivery | Static hosting, with CI running a type check, the unit tests and a production build on every pull request |
+| Delivery | Static hosting; CI runs a type check, the unit tests and a production build on every pull request |
 
-## Screenshots
+## Repo map
 
-All captured on a local QA stack with seeded demo data. No real customers, prices or recipes appear.
+```
+README.md               this case study
+docs/architecture.md    surfaces, data model, roles
+docs/security.md        access rules and how they were verified
+docs/decisions.md       seven decisions as short ADRs
+docs/lessons.md         what I learned
+docs/how-it-works.svg   the diagram above
+docs/assets/            cover and demo-data screenshots
+docs/src/               the HTML that draws the cover
+scripts/check-links.py  CI check: every local link and image resolves
+```
 
-| | |
-|---|---|
-| ![Public cocktail menu with search, category pills and a seasonal section](docs/screenshots/public-cocktail-menu.png) | ![Event inventory as a plan, with items marked Not confirmed](docs/screenshots/event-inventory-plan.png) |
-| Public cocktail menu. A seasonal section leads the list only while seasonal drinks are switched on, under a title the owner sets. | Event inventory is a plan. Nothing leaves the warehouse until it is confirmed. |
-| ![Confirm dialog listing exactly what will be taken from the warehouse](docs/screenshots/event-inventory-confirm.png) | |
-| The confirm step shows exactly what will move before anything moves. | |
+## Credits
 
-More shots are listed in [docs/screenshots/TODO.md](docs/screenshots/TODO.md).
+Thanks to Jose at [ByJoseM](https://www.byjosem.com) for the permission, the honest feedback and a year of real bookings to test against. Built with [Claude Code](https://www.anthropic.com/claude-code), [Supabase](https://supabase.com) and [shadcn/ui](https://ui.shadcn.com). The first draft of the site came from [Lovable](https://lovable.dev).
 
-## Read more
+## Licence
 
-- [Architecture](docs/architecture.md): surfaces, data model and roles, with diagrams
-- [Security](docs/security.md): how access is enforced and verified
-- [Decisions](docs/decisions.md): eight decisions and their tradeoffs
-- [Lessons](docs/lessons.md): what I learned
+Case study text and images copyright 2026 Diego Bauer, all rights reserved ([LICENSE](LICENSE)). The ByJoseM name and brand belong to ByJoseM. Made in Dublin by [Diego Bauer](https://www.aiwithdiego.com) · [LinkedIn](https://www.linkedin.com/in/diego-bauer-domeyko/)
 
----
-
-Published with the permission of ByJoseM. Case study text copyright (c) 2026 Diego Bauer. See [LICENSE](LICENSE).
+Built by [AIwithDiego](https://www.aiwithdiego.com). Need something like this for your business? [Talk to me](https://www.aiwithdiego.com).
