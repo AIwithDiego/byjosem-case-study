@@ -1,3 +1,5 @@
-# Private draft, never published
-PERMISSION-REQUEST.md
 .DS_Store
+.env
+.env.*
+!.env.example
+node_modules/

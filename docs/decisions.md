@@ -70,7 +70,7 @@ Seven decisions from the project, written as short ADRs. Each one is real, and s
 
 **Decision.** After three weeks of real use the owner said it meant at least two documents per job and that was not great. We reversed it: one invoice per job, a deposit is a payment recorded against it, and every payment can produce a customer-facing receipt with its own number. The invoice reads as a statement: total, payments received, balance due.
 
-**Why.** We had answered a question the owner did not have. A sole trader needs to know who still owes them, not a filing structure. The reversal cost almost nothing, because the earlier "what is this invoice for" choice had been kept out of the schema.
+**Why.** We had answered a question the owner did not have. A one-person business needs to know who still owes it, not a filing structure. The reversal cost almost nothing, because the earlier "what is this invoice for" choice had been kept out of the schema.
 
 **Tradeoffs.** A receipt had to become an issued state of a payment, with a number assigned once and figures frozen, so that deleting an earlier payment could never change a receipt the customer already has. The "Paid" stamp now follows the money rather than the document status, so a refund cannot leave "Paid" printed on a page that shows a balance owed.
 

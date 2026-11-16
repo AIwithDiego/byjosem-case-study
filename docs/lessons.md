@@ -10,7 +10,7 @@ The one design that shipped and was rejected within a day was modelled on the da
 
 ## Good accounting can be the wrong answer
 
-"Two invoices per job" was correct and useless to a sole trader. Keeping that choice out of the schema is the only reason reversing it was cheap. Where I am unsure a rule reflects how the customer thinks, I keep it in the UI layer until it has survived real use.
+"Two invoices per job" was correct and useless to a one-person business. Keeping that choice out of the schema is the only reason reversing it was cheap. Where I am unsure a rule reflects how the customer thinks, I keep it in the UI layer until it has survived real use.
 
 ## Retroactive by construction
 

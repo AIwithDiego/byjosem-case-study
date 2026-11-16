@@ -89,24 +89,9 @@ The shapes that matter:
 - **Stock is a ledger plus a count.** Each item has a current stock and a par level. Weekly stocktakes overwrite the count and keep a frozen history. Between counts, confirmed event allocations and returns write to an append-only movement journal. Usage is derived as sent minus returned, never stored.
 - **Append-only where history matters.** Quote revisions, invoice revisions, payments and stock movements are journals. Corrections are new rows, not edits.
 
-### A small type illustration
+### Money as text, then cents
 
-Money never travels as a float. The line model the builders share looks roughly like this:
-
-```ts
-type PricingMode = 'flat' | 'per_guest' | 'per_hour' | 'per_cocktail' | 'on_request';
-
-interface DraftLine {
-  rowId: string;          // stable per row, so the same catalogue item can appear twice
-  description: string;
-  mode: PricingMode;
-  unitPriceInput: string; // raw text as typed, parsed only at compute time
-  count: string | null;   // people, guests or cocktails
-  hours: string | null;   // only for per-hour lines
-}
-```
-
-The raw strings are deliberate. See the locale-safe parsing decision in [decisions.md](decisions.md).
+Money never travels as a float. Every price field keeps the text exactly as typed and is parsed only when totals are computed, then stored in integer cents. The reasoning is in the locale-safe parsing decision in [decisions.md](decisions.md).
 
 ## Auth and roles
 

@@ -1,0 +1,37 @@
+<!doctype html>
+<!-- README cover and social preview, 1280x640. Render: see README.md in this folder. Add ?social to show the repo URL. -->
+<html><head><meta charset="utf-8">
+<style>
+:root { --night:#08130f; --line:#23392f; --milk:#eef3ec; --milk-soft:#9fb3a7; --chalk:#f6ecd6; --green:#4bd68f; --gold:#e3cd9c; }
+* { box-sizing: border-box; margin: 0; }
+html, body { width: 1280px; height: 640px; }
+body { background: radial-gradient(900px 600px at 30% 40%, #0f2a1e, var(--night)); color: var(--milk); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; display: grid; grid-template-columns: 560px 1fr; gap: 40px; padding: 64px 0 64px 64px; overflow: hidden; position: relative; }
+.kicker { color: var(--gold); font-weight: 700; font-size: 20px; letter-spacing: .3px; }
+h1 { font-size: 46px; line-height: 1.12; margin-top: 18px; color: var(--chalk); letter-spacing: -.5px; }
+.num { margin-top: 34px; display: grid; gap: 16px; }
+.row { display: flex; align-items: baseline; gap: 16px; }
+.row b { font-size: 50px; line-height: 1; min-width: 200px; text-align: right; font-variant-numeric: tabular-nums; letter-spacing: -1px; }
+.row span { font-size: 21px; color: var(--milk-soft); line-height: 1.25; }
+.g b { color: var(--green); }
+.c b { color: var(--chalk); }
+.foot { margin-top: 30px; font-size: 17px; color: var(--milk-soft); }
+.shot { align-self: center; border-radius: 16px 0 0 16px; overflow: hidden; border: 1px solid var(--line); border-right: 0; box-shadow: 0 30px 80px rgba(0,0,0,.55); }
+.shot img { display: block; width: 900px; }
+.url { display: none; position: absolute; right: 40px; bottom: 26px; font: 500 16px ui-monospace, "SF Mono", Menlo, monospace; color: var(--milk-soft); }
+body.social .url { display: block; }
+</style></head>
+<body>
+  <div>
+    <div class="kicker">Case study · ByJoseM, Ireland</div>
+    <h1>A bartending business its owner runs by talking to it.</h1>
+    <div class="num">
+      <div class="row g"><b>34</b><span>tools in the owner's own<br>ChatGPT, since 18 Oct 2026</span></div>
+      <div class="row c"><b>134</b><span>pull requests merged,<br>April to November 2026</span></div>
+      <div class="row c"><b>638</b><span>unit tests on money,<br>pricing and stock</span></div>
+    </div>
+    <p class="foot">Built by Diego Bauer with Claude Code. Screens use demo data.</p>
+  </div>
+  <div class="shot"><img src="../assets/admin-events-hub.png" alt=""></div>
+  <div class="url">github.com/AIwithDiego/byjosem-case-study</div>
+  <script>if (location.search.includes("social")) document.body.classList.add("social");</script>
+</body></html>

@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 1200 600" role="img" aria-labelledby="t d">
+  <title id="t">How the ByJoseM platform works</title>
+  <desc id="d">One booking is one thread: enquiry, lead, quote, event, stock confirmed, invoice, payment and receipt. The public website, the owner's admin, the owner's ChatGPT connector and the worker portal each work on part of that thread, over one Postgres database with row level security. Money and stock are computed in database functions.</desc>
+  <style>
+    .bg{fill:#0c1a1c}
+    .h{font:700 26px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#f4ecd8}
+    .sub{font:400 16px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#a9bcbc}
+    .step{fill:#13292c;stroke:#2c4a4d;stroke-width:1.5}
+    .key{fill:#2a2410;stroke:#e3cd9c;stroke-width:2}
+    .st{font:700 17px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#f4ecd8}
+    .sn{font:400 12.5px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#a9bcbc}
+    .num{font:700 13px ui-monospace,"SF Mono",Menlo,monospace;fill:#7fe6da}
+    .arr{stroke:#7fe6da;stroke-width:2;fill:none}
+    .band{fill:none;stroke-width:2}
+    .pub{stroke:#7fe6da}.adm{stroke:#e3cd9c}.wrk{stroke:#9db4ff}.gpt{stroke:#c9a7ff}
+    .bl{font:700 14px ui-monospace,"SF Mono",Menlo,monospace}
+    .lp{fill:#7fe6da}.la{fill:#e3cd9c}.lw{fill:#9db4ff}.lg{fill:#c9a7ff}
+    .db{fill:#13292c;stroke:#7fe6da;stroke-width:1.5}
+    .dbt{font:700 17px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#f4ecd8}
+    .dbs{font:400 14px system-ui,-apple-system,"Segoe UI",sans-serif;fill:#a9bcbc}
+  </style>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#7fe6da"/></marker>
+  </defs>
+  <rect class="bg" width="1200" height="600" rx="18"/>
+  <text class="h" x="40" y="56">One booking, one thread, one database</text>
+  <text class="sub" x="40" y="84">Before: WhatsApp, a spreadsheet, hand-typed quotes and stock counted from memory. After: every step below is a record the next step reads.</text>
+
+  <!-- the job thread -->
+  <g>
+    <rect class="step" x="40" y="130" width="140" height="96" rx="12"/>
+    <text class="num" x="56" y="154">1</text><text class="st" x="56" y="180">Enquiry</text><text class="sn" x="56" y="202">form on the site,</text><text class="sn" x="56" y="218">confirmation email</text>
+
+    <rect class="step" x="200" y="130" width="140" height="96" rx="12"/>
+    <text class="num" x="216" y="154">2</text><text class="st" x="216" y="180">Lead</text><text class="sn" x="216" y="202">created by a trigger,</text><text class="sn" x="216" y="218">follow-up dates</text>
+
+    <rect class="step" x="360" y="130" width="140" height="96" rx="12"/>
+    <text class="num" x="376" y="154">3</text><text class="st" x="376" y="180">Quote</text><text class="sn" x="376" y="202">one catalogue,</text><text class="sn" x="376" y="218">PDF, revisions</text>
+
+    <rect class="step" x="520" y="130" width="140" height="96" rx="12"/>
+    <text class="num" x="536" y="154">4</text><text class="st" x="536" y="180">Event</text><text class="sn" x="536" y="202">staff, menu,</text><text class="sn" x="536" y="218">stock as a plan</text>
+
+    <rect class="key" x="680" y="130" width="140" height="96" rx="12"/>
+    <text class="num" x="696" y="154">5</text><text class="st" x="696" y="180">Confirm stock</text><text class="sn" x="696" y="202">the only step that</text><text class="sn" x="696" y="218">moves real stock</text>
+
+    <rect class="step" x="840" y="130" width="140" height="96" rx="12"/>
+    <text class="num" x="856" y="154">6</text><text class="st" x="856" y="180">Invoice</text><text class="sn" x="856" y="202">numbered only</text><text class="sn" x="856" y="218">when issued</text>
+
+    <rect class="step" x="1000" y="130" width="160" height="96" rx="12"/>
+    <text class="num" x="1016" y="154">7</text><text class="st" x="1016" y="180">Payment</text><text class="sn" x="1016" y="202">deposit and balance,</text><text class="sn" x="1016" y="218">each with a receipt</text>
+
+    <path class="arr" d="M180 178H198" marker-end="url(#a)"/>
+    <path class="arr" d="M340 178H358" marker-end="url(#a)"/>
+    <path class="arr" d="M500 178H518" marker-end="url(#a)"/>
+    <path class="arr" d="M660 178H678" marker-end="url(#a)"/>
+    <path class="arr" d="M820 178H838" marker-end="url(#a)"/>
+    <path class="arr" d="M980 178H998" marker-end="url(#a)"/>
+  </g>
+
+  <!-- who works on which part -->
+  <rect class="band pub" x="40" y="252" width="140" height="40" rx="10"/>
+  <text class="bl lp" x="56" y="277">Public site</text>
+  <rect class="band adm" x="200" y="252" width="960" height="40" rx="10"/>
+  <text class="bl la" x="216" y="277">Admin: the owner, on a phone, between events (32 pages)</text>
+  <rect class="band gpt" x="200" y="306" width="300" height="40" rx="10"/>
+  <text class="bl lg" x="216" y="331">ChatGPT: asks and drafts</text>
+  <rect class="band wrk" x="520" y="306" width="300" height="40" rx="10"/>
+  <text class="bl lw" x="536" y="331">Worker portal: own events only</text>
+
+  <!-- database -->
+  <rect class="db" x="40" y="380" width="1120" height="96" rx="12"/>
+  <text class="dbt" x="64" y="414">Postgres with row level security</text>
+  <text class="dbs" x="64" y="440">The database is the boundary: anonymous visitors read active content, workers read their assignments, everything else is admin only.</text>
+  <text class="dbs" x="64" y="462">Totals in integer cents and stock movements are computed by database functions, never taken from the browser.</text>
+
+  <path class="arr" d="M110 292V378" marker-end="url(#a)"/>
+  <path class="arr" d="M350 346V378" marker-end="url(#a)"/>
+  <path class="arr" d="M670 346V378" marker-end="url(#a)"/>
+  <path class="arr" d="M1000 292V378" marker-end="url(#a)"/>
+
+  <text class="sub" x="40" y="526">Documents freeze what they were: line items, prices and business details are snapshotted when written.</text>
+  <text class="sub" x="40" y="552">History is append-only where it matters: revisions, payments and stock movements are journals.</text>
+</svg>
